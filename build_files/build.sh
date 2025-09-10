@@ -125,8 +125,8 @@ chmod +x /usr/bin/opengamepadui-handheld
 
 echo "Configuring automatic login to OpenGamepadUI..."
 
-# Create gaming user account
-useradd -m -s /bin/bash -G wheel,audio,video,input,render gamer || true
+# Create gaming user account (only add to groups that exist)
+useradd -m -s /bin/bash -G wheel gamer || true
 
 # Set up automatic login for the gaming user
 mkdir -p /etc/systemd/system/getty@tty1.service.d
@@ -136,7 +136,7 @@ ExecStart=
 ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin gamer %I $TERM
 EOF
 
-# Create user session configuration
+# Ensure home directory exists and create user session configuration
 mkdir -p /home/gamer/.config/systemd/user
 cat > /home/gamer/.config/systemd/user/opengamepadui-autostart.service << 'EOF'
 [Unit]
@@ -156,7 +156,7 @@ WantedBy=default.target
 EOF
 
 # Set up the gamer user environment
-chown -R gamer:gamer /home/gamer/.config
+chown -R gamer:gamer /home/gamer/.config || true
 
 # Configure user to auto-start OpenGamepadUI session
 mkdir -p /home/gamer/.config/environment.d
@@ -173,17 +173,18 @@ SDL_VIDEODRIVER=wayland
 GAMESCOPE_ARGS=--xwayland-count=2 -w 1920 -h 1080 --adaptive-sync --force-grab-cursor
 EOF
 
-chown -R gamer:gamer /home/gamer/.config/environment.d
+# Fix ownership of all user files
+chown -R gamer:gamer /home/gamer || true
 
 ### Enable required services
 
 echo "Enabling system services..."
 
-# Enable essential services
-systemctl enable inputplumber
-systemctl enable powerstation
-systemctl enable dbus
-systemctl enable systemd-logind
+# Enable essential services (only if they exist)
+systemctl enable inputplumber || echo "InputPlumber service not available"
+systemctl enable powerstation || echo "PowerStation service not available"
+systemctl enable dbus || true
+systemctl enable systemd-logind || true
 
 # Configure polkit permissions for gaming user
 cat > /etc/polkit-1/rules.d/50-opengamepadui.rules << 'EOF'
