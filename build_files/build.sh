@@ -8,15 +8,15 @@ echo "Building Bazzite-OpenGamepadUI: A handheld gaming OS with OpenGamepadUI"
 
 # Install required dependencies (skip already installed)
 echo "Installing required dependencies..."
-dnf5 install -y --skip-unavailable 
-    curl 
-    wget 
-    unzip 
-    systemd 
-    polkit 
-    dbus 
-    gamescope 
-    vulkan-tools 
+dnf5 install -y --skip-unavailable \
+    curl \
+    wget \
+    unzip \
+    systemd \
+    polkit \
+    dbus \
+    gamescope \
+    vulkan-tools \
     make
 
 # Install InputPlumber for advanced input management
