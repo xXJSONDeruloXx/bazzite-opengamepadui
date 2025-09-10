@@ -1,54 +1,173 @@
-# image-template
+# Bazzite-OpenGamepadUI
 
-This repository is meant to be a template for building your own custom [bootc](https://github.com/bootc-dev/bootc) image. This template is the recommended way to make customizations to any image published by the Universal Blue Project.
+A handheld gaming OS based on Bazzite-deck that boots into [OpenGamepadUI](https://github.com/ShadowBlip/OpenGamepadUI) instead of Steam, providing an open-source gaming interface optimized for handheld devices.
 
-# Community
+## What is this?
 
-If you have questions about this template after following the instructions, try the following spaces:
-- [Universal Blue Forums](https://universal-blue.discourse.group/)
-- [Universal Blue Discord](https://discord.gg/WEu6BdFEtp)
-- [bootc discussion forums](https://github.com/bootc-dev/bootc/discussions) - This is not an Universal Blue managed space, but is an excellent resource if you run into issues with building bootc images.
+This is a custom Fedora Atomic desktop image built using [Universal Blue](https://universal-blue.org), combining:
 
-# How to Use
+- **Bazzite-deck**: The handheld gaming optimizations and drivers from the excellent Bazzite project
+- **OpenGamepadUI**: An open-source game launcher and overlay designed with gamepad-native experience in mind
+- **Gaming optimizations**: Pre-configured for handheld gaming devices like Steam Deck, ROG Ally, and others
 
-To get started on your first bootc image, simply read and follow the steps in the next few headings.
-If you prefer instructions in video form, TesterTech created an excellent tutorial, embedded below.
+## Features
 
-[![Video Tutorial](https://img.youtube.com/vi/IxBl11Zmq5w/0.jpg)](https://www.youtube.com/watch?v=IxBl11Zmq5wE)
+- 🎮 **OpenGamepadUI Interface**: Modern, gamepad-friendly interface for game launching and system management
+- 🚀 **Handheld Optimizations**: All the hardware support and optimizations from Bazzite-deck
+- 🎯 **Gaming First**: Boots directly into gaming mode with automatic login
+- 🔧 **InputPlumber**: Advanced input device management for complex controller configurations
+- ⚡ **PowerStation**: Performance and power management for handheld devices
+- 🌐 **Gamescope**: Wayland compositor optimized for gaming
+- 🔒 **Atomic Updates**: Reliable, rollback-capable system updates via rpm-ostree
 
-## Step 0: Prerequisites
+## Hardware Support
 
-These steps assume you have the following:
-- A Github Account
-- A machine running a bootc image (e.g. Bazzite, Bluefin, Aurora, or Fedora Atomic)
-- Experience installing and using CLI programs
+This image includes optimizations for:
+- Steam Deck (LCD and OLED)
+- ASUS ROG Ally
+- Lenovo Legion Go  
+- GPD devices (Win 3, Win 4, etc.)
+- AYANEO handhelds
+- OneXPlayer devices
+- And other x86_64 handheld gaming devices
 
-## Step 1: Preparing the Template
+## Installation
 
-### Step 1a: Copying the Template
+### Method 1: Rebase from existing Fedora Atomic
 
-Select `Use this Template` on this page. You can set the name and description of your repository to whatever you would like, but all other settings should be left untouched.
-
-Once you have finished copying the template, you need to enable the Github Actions workflows for your new repository.
-To enable the workflows, go to the `Actions` tab of the new repository and click the button to enable workflows.
-
-### Step 1b: Cloning the New Repository
-
-Here I will defer to the much superior GitHub documentation on the matter. You can use whichever method is easiest.
-[GitHub Documentation](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-
-Once you have the repository on your local drive, proceed to the next step.
-
-## Step 2: Initial Setup
-
-### Step 2a: Creating a Cosign Key
-
-Container signing is important for end-user security and is enabled on all Universal Blue images. By default the image builds *will fail* if you don't.
-
-First, install the [cosign CLI tool](https://edu.chainguard.dev/open-source/sigstore/cosign/how-to-install-cosign/#installing-cosign-with-the-cosign-binary)
-With the cosign tool installed, run inside your repo folder:
+If you're already running Fedora Silverblue, Kinoite, or any Universal Blue image:
 
 ```bash
+rpm-ostree rebase ostree-unverified-registry:ghcr.io/yourusername/bazzite-opengamepadui:latest
+systemctl reboot
+```
+
+### Method 2: Fresh Installation
+
+1. Download a Fedora Silverblue ISO
+2. Install Fedora Silverblue normally
+3. After first boot, run the rebase command above
+
+## First Boot
+
+After installation:
+
+1. The system will automatically log in as the `gamer` user
+2. OpenGamepadUI will launch automatically in fullscreen gaming mode
+3. Use your gamepad to navigate the interface
+4. Add games from various sources (Steam, Lutris, Flatpak, etc.)
+
+## Key Differences from Steam Deck
+
+| Feature | Steam Deck | Bazzite-OpenGamepadUI |
+|---------|------------|----------------------|
+| Gaming Interface | Steam Big Picture | OpenGamepadUI |
+| Game Sources | Primarily Steam | Multi-source (Steam, Lutris, Epic, etc.) |
+| Desktop Mode | KDE Plasma | Available via session switching |
+| Updates | Valve's schedule | Fedora Atomic updates |
+| Customization | Limited | Full Linux customization |
+| Source Code | Partially open | Fully open source |
+
+## Using the System
+
+### Gaming Mode (Default)
+- The system boots directly into OpenGamepadUI
+- Navigate with your gamepad
+- Launch games, manage settings, browse your library
+- Access system settings through the OpenGamepadUI interface
+
+### Desktop Mode
+- Access via the power menu in OpenGamepadUI: "Switch to Desktop"
+- Full KDE Plasma desktop environment
+- Return to gaming mode via desktop shortcut or session selection
+
+### Adding Games
+OpenGamepadUI supports multiple game sources:
+- **Steam**: Automatic detection of Steam games
+- **Lutris**: Epic Games Store, GOG, Battle.net, etc.
+- **Flatpak**: Games from Flathub
+- **Native**: Linux games and emulators
+- **AppImages**: Portable game packages
+
+## Configuration
+
+### Session Management
+Switch between gaming and desktop modes:
+```bash
+# From command line
+steamos-session-select desktop    # Switch to desktop
+steamos-session-select opengamepadui  # Switch to gaming mode
+```
+
+### Services
+Key services for the gaming experience:
+- `opengamepadui-session.service`: Main gaming interface
+- `inputplumber.service`: Advanced input management  
+- `powerstation.service`: Performance and power management
+- `gamescope.service`: Wayland gaming compositor
+
+### Customization
+All standard Fedora Atomic customization applies:
+- Install software via Flatpak or rpm-ostree layering
+- Customize the desktop environment in desktop mode
+- Add custom game sources and emulators
+
+## Development
+
+### Building Your Own Image
+
+1. Fork this repository
+2. Modify `build_files/build.sh` for your customizations
+3. Update the image name in `.github/workflows/build.yml`
+4. Push to trigger the GitHub Actions build
+5. Your custom image will be available at `ghcr.io/yourusername/bazzite-opengamepadui`
+
+### Customizing OpenGamepadUI
+OpenGamepadUI is highly customizable:
+- Themes and visual customization
+- Input device configuration
+- Performance profiles
+- Plugin system for extensions
+
+## Troubleshooting
+
+### Reset to Gaming Mode
+If you're stuck in desktop mode:
+```bash
+steamos-session-select opengamepadui
+```
+
+### Check Service Status
+```bash
+systemctl --user status opengamepadui-session
+systemctl status inputplumber
+systemctl status powerstation
+```
+
+### Logs
+```bash
+journalctl --user -u opengamepadui-session -f
+journalctl -u inputplumber -f
+```
+
+## Credits
+
+- **Bazzite Team**: For the excellent handheld gaming optimizations
+- **OpenGamepadUI Team**: For the amazing open-source gaming interface
+- **Universal Blue**: For the framework that makes this possible
+- **SteamOS**: For pioneering the handheld gaming experience
+
+## Community
+
+- [OpenGamepadUI Discord](https://discord.gg/WEu6BdFEtp)
+- [Universal Blue Forums](https://universal-blue.discourse.group/)
+- [Bazzite Community](https://github.com/ublue-os/bazzite)
+
+## License
+
+This project maintains the same licensing as its components:
+- Build scripts and configuration: MIT License
+- Inherits licenses from Bazzite, OpenGamepadUI, and Fedora componentsbash
 COSIGN_PASSWORD="" cosign generate-key-pair
 ```
 

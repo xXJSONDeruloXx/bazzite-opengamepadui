@@ -2,17 +2,14 @@
 FROM scratch AS ctx
 COPY build_files /
 
-# Base Image
-FROM ghcr.io/ublue-os/bazzite:stable
+# Base Image - Use bazzite-deck for handheld gaming optimizations
+FROM ghcr.io/ublue-os/bazzite-deck:stable
 
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:latest
-# FROM ghcr.io/ublue-os/bluefin-nvidia:stable
-# 
-# ... and so on, here are more base images
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
-# Fedora base image: quay.io/fedora/fedora-bootc:41
-# CentOS base images: quay.io/centos-bootc/centos-bootc:stream10
+## This image is based on Bazzite-deck which provides:
+# - Steam Deck and handheld gaming device optimizations
+# - Gamescope compositor for gaming
+# - Hardware-specific drivers and configurations
+# - Gaming-focused kernel parameters and system settings
 
 ### MODIFICATIONS
 ## make modifications desired in your image and install packages by modifying the build.sh script
