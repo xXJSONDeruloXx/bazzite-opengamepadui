@@ -19,27 +19,33 @@ dnf5 install -y --skip-unavailable \
     vulkan-tools \
     make
 
-# Install InputPlumber for advanced input management
-echo "Installing InputPlumber..."
-dnf5 copr enable -y shadowblip/inputplumber
-dnf5 install -y --skip-unavailable inputplumber
+# Install InputPlumber for advanced input management (if available)
+echo "Checking for InputPlumber availability..."
+if dnf5 copr enable -y shadowblip/inputplumber 2>/dev/null; then
+    echo "Installing InputPlumber from COPR..."
+    dnf5 install -y --skip-unavailable inputplumber || echo "InputPlumber not available, skipping..."
+else
+    echo "InputPlumber COPR not available for this Fedora version, skipping..."
+fi
 
-# Install PowerStation for performance management  
-echo "Installing PowerStation..."
-dnf5 copr enable -y shadowblip/powerstation
-dnf5 install -y --skip-unavailable powerstation
+# Install PowerStation for performance management (if available)  
+echo "Checking for PowerStation availability..."
+if dnf5 copr enable -y shadowblip/powerstation 2>/dev/null; then
+    echo "Installing PowerStation from COPR..."
+    dnf5 install -y --skip-unavailable powerstation || echo "PowerStation not available, skipping..."
+else
+    echo "PowerStation COPR not available for this Fedora version, skipping..."
+fi
 
-# Download and install OpenGamepadUI
-echo "Installing OpenGamepadUI..."
-OGUI_VERSION=$(curl -s https://api.github.com/repos/ShadowBlip/OpenGamepadUI/releases/latest | grep '"tag_name"' | cut -d'"' -f4 | tr -d 'v')
-echo "Latest OpenGamepadUI version: ${OGUI_VERSION}"
+# Download and install OpenGamepadUI using binary installation
+echo "Installing OpenGamepadUI from binary release..."
 
 # Create temporary directory for installation
 mkdir -p /tmp/opengamepadui-build
 cd /tmp/opengamepadui-build
 
-# Download the latest release tarball
-echo "Downloading OpenGamepadUI release..."
+# Download the latest binary release
+echo "Downloading OpenGamepadUI binary release..."
 curl -L "https://github.com/ShadowBlip/OpenGamepadUI/releases/latest/download/opengamepadui.tar.gz" -o opengamepadui.tar.gz
 
 # Verify download succeeded
@@ -48,11 +54,13 @@ if [ ! -f opengamepadui.tar.gz ]; then
     exit 1
 fi
 
-# Extract and install
+# Extract and install using the recommended method
 echo "Extracting and installing OpenGamepadUI..."
-tar -xzf opengamepadui.tar.gz
+tar xvfz opengamepadui.tar.gz
 cd opengamepadui
-make install PREFIX=/usr INSTALL_PREFIX=/usr || {
+
+# Install system-wide as recommended in the documentation
+make install PREFIX=/usr || {
     echo "ERROR: OpenGamepadUI installation failed"
     exit 1
 }
