@@ -15,7 +15,7 @@ Your GitHub Actions workflows are already configured! Here's what you need to do
 
 ### 2. Automatic Builds
 Your image will automatically build when you:
-- Push to the `main` branch 
+- Push to the `opengamepad` branch 
 - Create a pull request
 - Trigger manually via Actions tab
 - Daily at 10:05 AM UTC (scheduled)

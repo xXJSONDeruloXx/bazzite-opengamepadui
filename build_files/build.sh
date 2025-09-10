@@ -6,29 +6,28 @@ echo "Building Bazzite-OpenGamepadUI: A handheld gaming OS with OpenGamepadUI"
 
 ### Install OpenGamepadUI and Dependencies
 
-# Install required packages for OpenGamepadUI
-echo "Installing OpenGamepadUI dependencies..."
-dnf5 install -y \
-    curl \
-    wget \
-    unzip \
-    systemd \
-    polkit \
-    dbus \
-    gamescope \
-    mesa-utils \
-    vulkan-tools \
+# Install required dependencies (skip already installed)
+echo "Installing required dependencies..."
+dnf5 install -y --skip-unavailable 
+    curl 
+    wget 
+    unzip 
+    systemd 
+    polkit 
+    dbus 
+    gamescope 
+    vulkan-tools 
     make
 
 # Install InputPlumber for advanced input management
 echo "Installing InputPlumber..."
 dnf5 copr enable -y shadowblip/inputplumber
-dnf5 install -y inputplumber
+dnf5 install -y --skip-unavailable inputplumber
 
 # Install PowerStation for performance management  
 echo "Installing PowerStation..."
 dnf5 copr enable -y shadowblip/powerstation
-dnf5 install -y powerstation
+dnf5 install -y --skip-unavailable powerstation
 
 # Download and install OpenGamepadUI
 echo "Installing OpenGamepadUI..."
@@ -40,12 +39,23 @@ mkdir -p /tmp/opengamepadui-build
 cd /tmp/opengamepadui-build
 
 # Download the latest release tarball
+echo "Downloading OpenGamepadUI release..."
 curl -L "https://github.com/ShadowBlip/OpenGamepadUI/releases/latest/download/opengamepadui.tar.gz" -o opengamepadui.tar.gz
 
+# Verify download succeeded
+if [ ! -f opengamepadui.tar.gz ]; then
+    echo "ERROR: Failed to download OpenGamepadUI"
+    exit 1
+fi
+
 # Extract and install
+echo "Extracting and installing OpenGamepadUI..."
 tar -xzf opengamepadui.tar.gz
 cd opengamepadui
-make install PREFIX=/usr INSTALL_PREFIX=/usr
+make install PREFIX=/usr INSTALL_PREFIX=/usr || {
+    echo "ERROR: OpenGamepadUI installation failed"
+    exit 1
+}
 
 # Clean up temporary build directory
 cd /
