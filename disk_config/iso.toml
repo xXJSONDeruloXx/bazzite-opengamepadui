@@ -18,3 +18,7 @@ disable = [
   "org.fedoraproject.Anaconda.Modules.Subscription",
   "org.fedoraproject.Anaconda.Modules.Timezone"
 ]
+
+[[customizations.filesystem]]
+mountpoint = "/"
+minsize = "25 GiB"
